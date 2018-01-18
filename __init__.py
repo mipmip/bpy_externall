@@ -52,7 +52,7 @@ RUNNING = 3
 
 statemachine = {
     'status': STOPPED,
-    'tempfile': str(Path(tempfile.gettempdir()) / "bpy_external.io")
+    'tempfile': str("/tmp/bpy_external.io")
 }
 
 
@@ -118,8 +118,8 @@ class BPYExternallClient(bpy.types.Operator, object):
 
     def process(self):
         fp = filepath_read_handler()
-        log.debug('Processing: {}'.format(fp))
         if fp:
+            log.info('Processing: {}'.format(fp))
             logging.debug('-- action {}'.format(fp))
             execute_file(fp)
 
@@ -138,6 +138,7 @@ class BPYExternallClient(bpy.types.Operator, object):
     def event_dispatcher(self, context, type_op):
         if type_op == 'start':
             log.info("Entering modal operator...")
+            log.info('listening on ' + statemachine['tempfile'])
             statemachine['status'] = RUNNING
             wm = context.window_manager
             self._timer = wm.event_timer_add(self.speed, context.window)
